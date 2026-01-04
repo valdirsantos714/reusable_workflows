@@ -72,6 +72,7 @@ jobs:
         run: mvn clean package -DskipTests=false
 
       - name: Semantic Versioning by Branch
+        if: inputs.push-image
         id: semver
         uses: mathieudutour/github-tag-action@v6.2
         with:
