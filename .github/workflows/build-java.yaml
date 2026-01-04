@@ -78,10 +78,12 @@ jobs:
         run: |
           if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
             echo "❌ DOCKERHUB_USERNAME ou DOCKERHUB_TOKEN não configurados."
+            echo "⚠️ Configure os secrets no repositório que usa este workflow."
             exit 1
           fi
           if [ -z "${{ inputs.docker-image-name }}" ]; then
             echo "❌ docker-image-name é obrigatório quando push-image é true."
+            echo "⚠️ Passe o parâmetro docker-image-name ao executar este workflow."
             exit 1
           fi
 

@@ -62,7 +62,7 @@ jobs:
           fi
           if [ -z "${{ inputs.docker-image-name }}" ]; then
             echo "❌ Erro: docker-image-name é obrigatório quando push-image é true."
-            echo "⚠️ Passe o parâmetro docker-image-name ao chamar este workflow."
+            echo "⚠️ Passe o parâmetro docker-image-name ao executar este workflow."
             exit 1
           fi
 
