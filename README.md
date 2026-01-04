@@ -38,8 +38,7 @@ owner/repo/.github/workflows/filename@ref
 | -------------- | ------------------------------------------------------- |
 | `node-version` | Versão do Node.js                                       |
 | `push-image`   | Publicar imagem Docker (true/false)                     |
-| `image-name`   | Nome da imagem Docker                                   |
-| `image-tag`    | Tag da imagem Docker (opcional, default: versão SemVer) |
+| `docker-image-name`   | Nome da imagem Docker                                   |
 
 **Exemplo de uso:**
 
@@ -74,7 +73,7 @@ jobs:
 | `java-version`      | Versão do Java                             |
 | `distribution`      | Distribuição do Java (temurin, zulu, etc.) |
 | `cache`             | Cache de build (`maven` ou `gradle`)       |
-| `publish-docker`    | Publicar imagem Docker (true/false)        |
+| `push-image`       | Publicar imagem Docker (true/false)        |
 | `docker-image-name` | Nome da imagem Docker                      |
 
 **Exemplo de uso:**

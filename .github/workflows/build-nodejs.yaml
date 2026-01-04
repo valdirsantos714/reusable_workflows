@@ -10,9 +10,12 @@ on:
         required: true
         type: string
       push-image:
+        description: 'Push Docker image'
+        required: false
         type: boolean
         default: false
-      image-name:
+      docker-image-name:
+        description: 'Docker image name (ex: usuario/app)'
         type: string
         required: false
 
@@ -49,7 +52,7 @@ jobs:
           pre_release_suffix: dev
           default_bump: patch
 
-      - name: Validate Docker secrets and image-name
+      - name: Validate Docker secrets and docker-image-name
         if: inputs.push-image
         run: |
           if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
@@ -57,9 +60,9 @@ jobs:
             echo "⚠️ Configure os secrets no repositório que usa este workflow."
             exit 1
           fi
-          if [ -z "${{ inputs.image-name }}" ]; then
-            echo "❌ Erro: image-name é obrigatório quando push-image é true."
-            echo "⚠️ Passe o parâmetro image-name ao chamar este workflow."
+          if [ -z "${{ inputs.docker-image-name }}" ]; then
+            echo "❌ Erro: docker-image-name é obrigatório quando push-image é true."
+            echo "⚠️ Passe o parâmetro docker-image-name ao chamar este workflow."
             exit 1
           fi
 
@@ -76,5 +79,5 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ inputs.image-name }}:${{ steps.semver.outputs.new_tag }}
-            ${{ inputs.image-name }}:${{ github.ref_name }}
+            ${{ inputs.docker-image-name }}:${{ steps.semver.outputs.new_tag }}
+            ${{ inputs.docker-image-name }}:${{ github.ref_name }}

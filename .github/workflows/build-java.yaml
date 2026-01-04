@@ -23,7 +23,7 @@ on:
         type: string
         default: maven
 
-      publish-docker:
+      push-image:
         description: 'Publish Docker image'
         required: false
         type: boolean
@@ -74,26 +74,26 @@ jobs:
           default_bump: patch
 
       - name: Validate Docker secrets and image name
-        if: inputs.publish-docker
+        if: inputs.push-image
         run: |
           if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
             echo "❌ DOCKERHUB_USERNAME ou DOCKERHUB_TOKEN não configurados."
             exit 1
           fi
           if [ -z "${{ inputs.docker-image-name }}" ]; then
-            echo "❌ docker-image-name é obrigatório quando publish-docker é true."
+            echo "❌ docker-image-name é obrigatório quando push-image é true."
             exit 1
           fi
 
       - name: Docker Login
-        if: inputs.publish-docker
+        if: inputs.push-image
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
-        if: inputs.publish-docker
+        if: inputs.push-image
         uses: docker/build-push-action@v6
         with:
           context: .
