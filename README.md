@@ -15,17 +15,17 @@ Este repositório contém **workflows reutilizáveis do GitHub Actions** para No
 Para usar os workflows deste repositório em outro projeto, você pode chamá-los usando:
 
 ```text
-owner/repo/.github/workflows/filename@ref
+valdirsantos714/reusable_workflows/.github/workflows/filename@nome-da-branch
+
 ```
 
-> Todos os workflows suportam **inputs configuráveis** e **secrets do repositório caller**, garantindo segurança e flexibilidade.
-> O `GITHUB_TOKEN` é usado automaticamente para versionamento semântico, **não precisa ser configurado manualmente**.
+> Todos os workflows suportam **inputs configuráveis** e **secrets do repositório caller**, garantindo segurança e flexibilidade. O `GITHUB_TOKEN` é usado automaticamente para versionamento semântico.
 
 ---
 
-## Workflows Disponíveis
+## Workflows Disponíveis (Motores de Build)
 
-### 1️⃣ Build Node.js
+### 1️⃣ Build Node.js (`build-nodejs.yaml`)
 
 * Suporta **Node.js com a versão customizável**
 * Executa **checkout, instalação, testes e build**
@@ -46,13 +46,12 @@ owner/repo/.github/workflows/filename@ref
 ```yaml
 jobs:
   build:
-    uses: seu-usuario/reusable_workflows/.github/workflows/build-node-docker.yml@main
+    uses: valdirsantos714/reusable_workflows/.github/workflows/build-nodejs.yaml@main
     with:
       working-directory: 'frontend'
       node-version: '20'
       push-image: true
-      image-name: valdir/minha-app
-      image-tag: v1.0.${{ github.run_number }}
+      docker-image-name: valdir/minha-app
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -60,7 +59,7 @@ jobs:
 
 ---
 
-### 2️⃣ Build Java
+### 2️⃣ Build Java (`build-java.yaml`)
 
 * Suporta **Java com a versão e distribuição customizáveis**
 * Suporta cache Maven/Gradle
@@ -84,11 +83,11 @@ jobs:
 ```yaml
 jobs:
   build:
-    uses: seu-usuario/reusable_workflows/.github/workflows/build-java-docker.yml@main
+    uses: valdirsantos714/reusable_workflows/.github/workflows/build-java.yaml@main
     with:
       working-directory: 'backend'
       java-version: '21'
-      publish-docker: true
+      push-image: true
       docker-image-name: valdir/minha-api
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
