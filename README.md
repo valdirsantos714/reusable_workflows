@@ -1,34 +1,125 @@
 # Reusable Workflows
 
-Este repositório contém workflows reutilizáveis do GitHub Actions, projetados para serem facilmente integrados e utilizados em outros projetos. O objetivo é promover a padronização e a reusabilidade de automações, economizando tempo e esforço no desenvolvimento de novos repositórios.
+Este repositório contém **workflows reutilizáveis do GitHub Actions** para Node.js e Java, projetados para:
 
+* Facilitar integração com outros projetos
+* Garantir padronização e qualidade de build
+* Reduzir esforço de configuração em novos repositórios
+* Implementar **versionamento semântico automático**
+* Permitir **publicação de imagens Docker** de forma opcional e segura
+
+---
 
 ## Como Usar Workflows Reutilizáveis
 
-Para usar os workflows deste repositório em outro projeto, você pode chamá-los usando a sintaxe `owner/repo/.github/workflows/filename@ref`.
+Para usar os workflows deste repositório em outro projeto, você pode chamá-los usando:
 
-### Exemplo de Chamada do Workflow `build.yaml`
-
-Suponha que este repositório esteja em `seu-usuario/reusable_workflows` e você queira chamar o `build.yaml` na branch `main`.
-
-Crie um arquivo de workflow no seu outro repositório (ex: `.github/workflows/my-project-ci.yml`):
-
-```yaml
-name: CI for My Project
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  call_reusable_build:
-    # Substitua 'seu-usuario' pelo seu nome de usuário ou organização do GitHub
-    # Substitua 'main' pela branch, tag ou SHA do commit que você quer usar
-    uses: seu-usuario/reusable_workflows/.github/workflows/build.yaml@main
+```text
+owner/repo/.github/workflows/filename@ref
 ```
 
-Com esta configuração, sempre que houver um `push` ou `pull_request` na branch `main` do seu projeto, o workflow `build.yaml` deste repositório será executado, realizando as etapas de build e teste.
+> Todos os workflows suportam **inputs configuráveis** e **secrets do repositório caller**, garantindo segurança e flexibilidade.
+> O `GITHUB_TOKEN` é usado automaticamente para versionamento semântico, **não precisa ser configurado manualmente**.
+
+---
+
+## Workflows Disponíveis
+
+### 1️⃣ Build Node.js
+
+* Suporta **Node.js com a versão customizável**
+* Executa **checkout, instalação, testes e build**
+* Opcional: **push Docker Hub** com validação de secrets
+* Gera tags **SemVer automáticas** por branch
+
+**Inputs principais:**
+
+| Input          | Descrição                                               |
+| -------------- | ------------------------------------------------------- |
+| `node-version` | Versão do Node.js                                       |
+| `push-image`   | Publicar imagem Docker (true/false)                     |
+| `image-name`   | Nome da imagem Docker                                   |
+| `image-tag`    | Tag da imagem Docker (opcional, default: versão SemVer) |
+
+**Exemplo de uso:**
+
+```yaml
+jobs:
+  build:
+    uses: seu-usuario/reusable_workflows/.github/workflows/build-node-docker.yml@main
+    with:
+      node-version: '20'
+      push-image: true
+      image-name: valdir/minha-app
+      image-tag: v1.0.${{ github.run_number }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+```
+
+---
+
+### 2️⃣ Build Java
+
+* Suporta **Java com a versão e distribuição customizáveis**
+* Suporta cache Maven/Gradle
+* Executa **checkout, testes e build**
+* Opcional: **push Docker Hub** com validação de secrets
+* Gera tags **SemVer automáticas** por branch
+
+**Inputs principais:**
+
+| Input               | Descrição                                  |
+| ------------------- | ------------------------------------------ |
+| `java-version`      | Versão do Java                             |
+| `distribution`      | Distribuição do Java (temurin, zulu, etc.) |
+| `cache`             | Cache de build (`maven` ou `gradle`)       |
+| `publish-docker`    | Publicar imagem Docker (true/false)        |
+| `docker-image-name` | Nome da imagem Docker                      |
+
+**Exemplo de uso:**
+
+```yaml
+jobs:
+  build:
+    uses: seu-usuario/reusable_workflows/.github/workflows/build-java-docker.yml@main
+    with:
+      java-version: '21'
+      publish-docker: true
+      docker-image-name: valdir/minha-api
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+```
+
+---
+
+## Observações Importantes
+
+* **Versionamento Semântico Automático**:
+
+  * `main` → release estável (`v1.2.3`)
+  * `develop` → pre-release (`v1.3.0-dev.1`)
+  * `release/*` → release candidate (`v1.3.0-rc.1`)
+  * `hotfix/*` → patch imediato (`v1.2.4`)
+
+* **Docker opcional**:
+
+  * Secrets obrigatórios (`DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`) são validados antes do push.
+  * Sem secrets → workflow falha com mensagem clara.
+
+* **GITHUB_TOKEN**:
+
+  * Usado automaticamente para criação de tags e versionamento semântico.
+  * Não precisa ser configurado manualmente, mesmo em workflows reutilizáveis cross-repo.
+
+* **Cross-repo**:
+
+  * Workflows podem ser usados em qualquer repositório ou organização.
+  * Sempre executam no contexto do **repositório que chama o workflow**, garantindo segurança e isolamento.
+
+---
+
+Se quiser, posso criar **uma versão ainda mais visual do README**, com **diagrama do fluxo completo** mostrando Node.js/Java → SemVer → Docker → Argo CD, que ajuda muito novos usuários a entenderem a arquitetura.
+
+Quer que eu faça isso?
