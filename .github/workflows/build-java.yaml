@@ -6,6 +6,12 @@ permissions:
 on:
   workflow_call:
     inputs:
+      working-directory:
+        description: 'Working directory'
+        required: false
+        type: string
+        default: '.'
+
       java-version:
         description: 'Java version to use'
         required: true
@@ -58,9 +64,11 @@ jobs:
           cache: ${{ inputs.cache }}
 
       - name: Execute Tests
+        working-directory: ${{ inputs.working-directory }}
         run: mvn test
 
       - name: Build Project
+        working-directory: ${{ inputs.working-directory }}
         run: mvn clean package -DskipTests=false
 
       - name: Semantic Versioning by Branch

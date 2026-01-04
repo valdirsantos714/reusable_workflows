@@ -36,6 +36,7 @@ owner/repo/.github/workflows/filename@ref
 
 | Input          | Descrição                                               |
 | -------------- | ------------------------------------------------------- |
+| `working-directory` | Diretório de trabalho                                   |
 | `node-version` | Versão do Node.js                                       |
 | `push-image`   | Publicar imagem Docker (true/false)                     |
 | `docker-image-name`   | Nome da imagem Docker                                   |
@@ -47,6 +48,7 @@ jobs:
   build:
     uses: seu-usuario/reusable_workflows/.github/workflows/build-node-docker.yml@main
     with:
+      working-directory: 'frontend'
       node-version: '20'
       push-image: true
       image-name: valdir/minha-app
@@ -70,6 +72,7 @@ jobs:
 
 | Input               | Descrição                                  |
 | ------------------- | ------------------------------------------ |
+| `working-directory` | Diretório de trabalho                      |
 | `java-version`      | Versão do Java                             |
 | `distribution`      | Distribuição do Java (temurin, zulu, etc.) |
 | `cache`             | Cache de build (`maven` ou `gradle`)       |
@@ -83,6 +86,7 @@ jobs:
   build:
     uses: seu-usuario/reusable_workflows/.github/workflows/build-java-docker.yml@main
     with:
+      working-directory: 'backend'
       java-version: '21'
       publish-docker: true
       docker-image-name: valdir/minha-api
