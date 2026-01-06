@@ -65,17 +65,23 @@ jobs:
           pre_release_branches: develop
           pre_release_suffix: dev
           default_bump: patch
+      
+      - name: Normalize branch name
+        if: inputs.push-image
+        id: branch
+        run: |
+          echo "value=${GITHUB_REF_NAME//\//-}" >> $GITHUB_OUTPUT
 
-      - name: Validate Docker secrets and docker-image-name
+      - name: Validate Docker secrets and image name
         if: inputs.push-image
         run: |
           if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-            echo "❌ Erro: DOCKERHUB_USERNAME ou DOCKERHUB_TOKEN não configurados."
+            echo "❌ DOCKERHUB_USERNAME ou DOCKERHUB_TOKEN não configurados."
             echo "⚠️ Configure os secrets no repositório que usa este workflow."
             exit 1
           fi
           if [ -z "${{ inputs.docker-image-name }}" ]; then
-            echo "❌ Erro: docker-image-name é obrigatório quando push-image é true."
+            echo "❌ docker-image-name é obrigatório quando push-image é true."
             echo "⚠️ Passe o parâmetro docker-image-name ao executar este workflow."
             exit 1
           fi
@@ -91,7 +97,8 @@ jobs:
         if: inputs.push-image
         uses: docker/build-push-action@v6
         with:
+          context: ${{ inputs.working-directory }}
           push: true
           tags: |
-            ${{ inputs.docker-image-name }}:${{ steps.semver.outputs.new_tag }}
-            ${{ inputs.docker-image-name }}:${{ github.ref_name }}
+             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker-image-name }}:${{ steps.semver.outputs.new_tag }}
+             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker-image-name }}:${{ steps.branch.outputs.value }}
