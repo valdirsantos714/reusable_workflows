@@ -102,8 +102,22 @@ jobs:
             exit 1
           fi
 
+      - name: Check if k8s folder exists
+        id: k8s
+        run: |
+          if [ -d "k8s" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "📁 Pasta k8s encontrada"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "📁 Pasta k8s NÃO encontrada — pulando etapas de Kubernetes"
+          fi
+
       - name: Update Kubernetes manifest with new image tag
-        if: github.ref_name == 'main' && inputs.push-image
+        if: |
+          github.ref_name == 'main' &&
+          inputs.push-image &&
+          steps.k8s.outputs.exists == 'true'
         run: |
           yq -i '
             .spec.template.spec.containers[0].image =
@@ -111,7 +125,10 @@ jobs:
           ' k8s/backend/deployment.yaml
 
       - name: Commit Kubernetes manifest update
-        if: github.ref_name == 'main' && inputs.push-image
+        if: |
+          github.ref_name == 'main' &&
+          inputs.push-image &&
+          steps.k8s.outputs.exists == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
