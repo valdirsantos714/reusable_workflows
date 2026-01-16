@@ -145,7 +145,7 @@ jobs:
       
       - name: Update pom.xml version with SemVer
         if: github.ref_name == 'main' && inputs.push-image
-        working-directory: infocep
+        working-directory: ${{ inputs.working-directory }}
         run: |
           mvn versions:set \
             -DnewVersion=${{ steps.semver.outputs.new_tag }} \
@@ -157,7 +157,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add infocep/pom.xml
+          git add ${{ inputs.working-directory }}/pom.xml
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
